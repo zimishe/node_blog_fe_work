@@ -6,6 +6,8 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState("");
+  const [imageUrl, setImageUrl] = useState("")
+  const [imageVisible, setImageVisible] = useState(false)
 
   const getSignedrequest = async file => {
     try {
@@ -13,19 +15,25 @@ const App = () => {
         `http://localhost:8000/sign-s3?file-name=${file.name}&file-type=${file.type}`
       );
 
-      uploadFile(response.data.signedRequest);
+      setImageUrl(response.data.url);
+      uploadFile(response.data.signedRequest, file);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const uploadFile = signedRequest => {
-    axios.put(signedRequest);
+  const uploadFile = async (signedRequest, file) => {
+    await axios.put(signedRequest, file, {
+      headers: {
+        'Content-Type': file.type
+      }
+    });
+
+    setImageVisible(true);
   };
 
   const onFileSelected = e => {
     const file = e.target.files[0];
-    console.log("file", file);
 
     if (file) {
       setImage(e.target.value);
@@ -58,6 +66,7 @@ const App = () => {
 
   return (
     <form onSubmit={onSubmit} className="App">
+      {imageUrl && imageVisible && <img src={imageUrl} alt="" />}
       <input
         value={title}
         onChange={e => setTitle(e.target.value)}
