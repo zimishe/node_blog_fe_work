@@ -6,17 +6,14 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState("");
-  const [imageUrl, setImageUrl] = useState("")
-  const [imageVisible, setImageVisible] = useState(false)
+  const [imageURl, setImageUrl] = useState("");
+  const [commentText, setCommentText] = useState("");
 
   const getSignedrequest = async file => {
     try {
-      const response = await axios.get(
+      return await axios.get(
         `http://localhost:8000/sign-s3?file-name=${file.name}&file-type=${file.type}`
       );
-
-      setImageUrl(response.data.url);
-      uploadFile(response.data.signedRequest, file);
     } catch (error) {
       console.log(error);
     }
@@ -25,31 +22,33 @@ const App = () => {
   const uploadFile = async (signedRequest, file) => {
     await axios.put(signedRequest, file, {
       headers: {
-        'Content-Type': file.type
+        "Content-Type": file.type
       }
     });
-
-    setImageVisible(true);
   };
 
   const onFileSelected = e => {
     const file = e.target.files[0];
 
     if (file) {
-      setImage(e.target.value);
-      getSignedrequest(file);
+      setImage(file);
     }
   };
 
-  const onSubmit = e => {
+  const onSubmit = async e => {
     e.preventDefault();
 
-    axios
+    const response = await getSignedrequest(image);
+    await uploadFile(response.data.signedRequest, image);
+    setImageUrl(response.data.url);
+
+    await axios
       .post(
         "http://localhost:8000/articles",
         {
           title,
-          text
+          text,
+          coverImageUrl: response.data.url
         },
         {
           headers: {
@@ -64,29 +63,63 @@ const App = () => {
       });
   };
 
+  const postComment = async e => {
+    e.preventDefault();
+
+    await axios
+      .post(
+        "http://localhost:8000/articles/13b70a00-5ed1-11ea-8890-b19e78a9cc97/comments",
+        {
+          author: {
+            id: "e586f450-5ee5-11ea-8c79-6369f763d335"
+          },
+          text: commentText.trim()
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdC50IiwicGFzc3dvcmQiOiJ6aGVwYSIsImlhdCI6MTU4MzQxNTIzM30.KNDAiDKLK7AL2ZhAqUlmnrXmB4PXZqrkRoeMJbpObuA"
+          }
+        }
+      )
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
+
   return (
-    <form onSubmit={onSubmit} className="App">
-      {imageUrl && imageVisible && <img src={imageUrl} alt="" />}
-      <input
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        type="text"
-        placeholder="Article title"
-      />
-      <input
-        value={text}
-        onChange={e => setText(e.target.value)}
-        type="textarea"
-        placeholder="Article text"
-      />
-      <input
-        value={image}
-        onChange={onFileSelected}
-        type="file"
-        placeholder="Select article cover"
-      />
-      <button type="submit">Publish</button>
-    </form>
+    <>
+      <form onSubmit={onSubmit} className="App">
+        {imageURl && <img style={{ width: "100%" }} src={imageURl} alt="" />}
+        <input
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          type="text"
+          placeholder="Article title"
+        />
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          type="textarea"
+          placeholder="Article text"
+        />
+        <input
+          onChange={onFileSelected}
+          type="file"
+          placeholder="Select article cover"
+        />
+        <button type="submit">Publish</button>
+      </form>
+      <form style={{ margin: "20px auto", width: 400 }} onSubmit={postComment}>
+        <input
+          type="textarea"
+          value={commentText}
+          onChange={e => setCommentText(e.target.value)}
+        />
+        <button type="submit">Send comment</button>
+      </form>
+    </>
   );
 };
 
