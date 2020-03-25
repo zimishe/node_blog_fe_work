@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+const API_URL = 'http://localhost:8000';
+
 const App = () => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
@@ -12,7 +14,7 @@ const App = () => {
   const getSignedrequest = async file => {
     try {
       return await axios.get(
-        `http://localhost:8000/sign-s3?file-name=${file.name}&file-type=${file.type}`
+        `${API_URL}/sign-s3?file-name=${file.name}&file-type=${file.type}`
       );
     } catch (error) {
       console.log(error);
@@ -44,11 +46,14 @@ const App = () => {
 
     await axios
       .post(
-        "http://localhost:8000/articles",
+        `${API_URL}/articles`,
         {
           title,
           text,
-          coverImageUrl: response.data.url
+          coverImageUrl: response.data.url,
+          author: {
+            id: "e586f450-5ee5-11ea-8c79-6369f763d335"
+          },
         },
         {
           headers: {
@@ -68,7 +73,7 @@ const App = () => {
 
     await axios
       .post(
-        "http://localhost:8000/articles/13b70a00-5ed1-11ea-8890-b19e78a9cc97/comments",
+        `${API_URL}/articles/95ba2270-6eae-11ea-b9dd-8779de227448/comments`,
         {
           author: {
             id: "e586f450-5ee5-11ea-8c79-6369f763d335"
@@ -87,6 +92,28 @@ const App = () => {
         console.log(error);
       });
   };
+
+  const getReport = async e => {
+    e.preventDefault()
+
+    const { data } = await axios
+      .get(
+        `${API_URL}/articles/95ba2270-6eae-11ea-b9dd-8779de227448/report`,
+
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdC50IiwicGFzc3dvcmQiOiJ6aGVwYSIsImlhdCI6MTU4MzQxNTIzM30.KNDAiDKLK7AL2ZhAqUlmnrXmB4PXZqrkRoeMJbpObuA"
+          }
+        }
+      )
+      .catch(function(error) {
+        console.log(error);
+      });
+
+    window.open(`${API_URL}/${data}`, '__blank')
+  }
 
   return (
     <>
@@ -118,6 +145,7 @@ const App = () => {
           onChange={e => setCommentText(e.target.value)}
         />
         <button type="submit">Send comment</button>
+        <button type="button" onClick={getReport}>Get report</button>
       </form>
     </>
   );
