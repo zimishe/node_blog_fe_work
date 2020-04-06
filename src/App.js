@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import StripeForm from './StripeForm';
 import "./App.css";
 
-const API_URL = 'http://localhost:8000';
+export const API_URL = 'http://localhost:8000';
 
 const App = () => {
   const [title, setTitle] = useState("");
@@ -118,6 +119,7 @@ const App = () => {
   return (
     <>
       <form onSubmit={onSubmit} className="App">
+        <h3>Publish article</h3>
         {imageURl && <img style={{ width: "100%" }} src={imageURl} alt="" />}
         <input
           value={title}
@@ -139,14 +141,17 @@ const App = () => {
         <button type="submit">Publish</button>
       </form>
       <form style={{ margin: "20px auto", width: 400 }} onSubmit={postComment}>
+        <h3>Send some comment!</h3>
         <input
           type="textarea"
           value={commentText}
           onChange={e => setCommentText(e.target.value)}
         />
         <button type="submit">Send comment</button>
+        <h3>Get article .pdf report!</h3>
         <button type="button" onClick={getReport}>Get report</button>
       </form>
+      <StripeForm />
     </>
   );
 };
