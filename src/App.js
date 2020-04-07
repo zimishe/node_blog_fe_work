@@ -3,7 +3,21 @@ import axios from "axios";
 import StripeForm from './StripeForm';
 import "./App.css";
 
+const USER_ID_KEY = 'user_id';
 export const API_URL = 'http://localhost:8000';
+
+const WEBSOCKET_URL = `ws://localhost:8001/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
+
+// connect to websocket channel only after login
+const connection = new WebSocket(WEBSOCKET_URL);
+
+connection.onerror = (error) => {
+  console.log(`WebSocket error: ${error}`)
+}
+
+connection.onmessage = (e) => {
+  console.log(e.data)
+}
 
 const App = () => {
   const [title, setTitle] = useState("");
@@ -53,7 +67,7 @@ const App = () => {
           text,
           coverImageUrl: response.data.url,
           author: {
-            id: "e586f450-5ee5-11ea-8c79-6369f763d335"
+            id: localStorage.getItem(USER_ID_KEY)
           },
         },
         {
@@ -74,10 +88,10 @@ const App = () => {
 
     await axios
       .post(
-        `${API_URL}/articles/95ba2270-6eae-11ea-b9dd-8779de227448/comments`,
+        `${API_URL}/articles/7228d890-78d8-11ea-ab7a-273da230e9f8/comments`,
         {
           author: {
-            id: "e586f450-5ee5-11ea-8c79-6369f763d335"
+            id: localStorage.getItem(USER_ID_KEY)
           },
           text: commentText.trim()
         },
