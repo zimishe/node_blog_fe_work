@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { API_URL, USER_ID_KEY, ACCESS_TOKEN_KEY } from "../App";
+import ArticlesList from "../components/ArticlesList";
 
 const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />;
 
@@ -174,7 +175,7 @@ const Home = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Paper elevation={1} className={classes.paper}>
-            articles list
+            <ArticlesList />
           </Paper>
         </Grid>
       </Grid>
