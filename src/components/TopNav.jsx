@@ -18,7 +18,7 @@ const TopNav = () => {
         </Typography>
         {name && (
           <Typography variant="body1" color="inherit">
-            Hello there, {name}
+            Hello there, <b>{name}</b>
           </Typography>
         )}
       </Toolbar>
