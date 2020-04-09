@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import { Link } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -45,12 +46,12 @@ const ArticleCard = ({
             <Typography variant="h5" component="h5">
               {title}
             </Typography>
-            <Typography style={{ marginBottom: 5 }} variant="body2" color="textSecondary" component="p">
+            <Typography color="textPrimary" style={{ marginBottom: 5 }} variant="body2" component="p">
               {text}
             </Typography>
             <Divider />
             <Typography variant="body2" color="textSecondary" component="p">
-              {createdAt}
+              {moment(createdAt).format('MM/DD/YYYY HH:mm')}
             </Typography>
           </CardContent>
         </CardActionArea>

@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import Button from '@material-ui/core/Button';
 import { API_URL } from './App'
 
 const style = {
@@ -57,11 +58,18 @@ const StripeForm = () => {
 
   return (
     <div style={{ width: 400, margin: '30px auto' }}>
-      <h3>Donate here!</h3>
-      <CardElement options={{ style}} />
-      <button onClick={handlePayment}>
-        Donate 0.50 USD
-      </button>
+      <CardElement options={{ style }} />
+      <div style={{ marginTop: 10, paddingTop: 20, textAlign: 'right', borderTop: '1px solid #2c2c2c' }}>
+        <Button
+          type="button"
+          variant="contained"
+          onClick={handlePayment}
+          color="secondary"
+          size="large"
+        >
+          Donate 0.50 USD
+        </Button>
+      </div>
     </div>
   )
 }

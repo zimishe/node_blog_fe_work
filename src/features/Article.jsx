@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Divider from "@material-ui/core/Divider";
@@ -34,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     textAlign: 'left'
+  },
+  left: {
+    textAlign: 'left'
   }
 }));
 
@@ -44,6 +49,29 @@ const Article = () => {
   const [article, setArticle] = useState({});
 
   const classes = useStyles();
+
+  useEffect(() => {
+    const getArticle = async () => {
+      const { data } = await axios
+        .get(
+          `${API_URL}/articles/${params.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                `Bearer ${localStorage.getItem(ACCESS_TOKEN_KEY)}`
+            }
+          }
+        )
+        .catch(function(error) {
+          console.log(error);
+        });
+
+        setArticle(data);
+      }
+
+      getArticle();
+  }, [params.id])
 
   useEffect(() => {
     const getArticleComments = async () => {
@@ -115,51 +143,71 @@ const Article = () => {
     window.open(`${API_URL}/${data}`, '__blank')
   }
 
+  const { title, text, coverImageUrl, createdAt } = article;
+
   return (
     <>
       <div className={classes.root}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={8}>
             <Paper elevation={1} className={classes.paper}>
-              <form className={classes.form} style={{ margin: "10px auto", width: 400 }} onSubmit={postComment}>
-                <Typography variant="h5">Send some comment!</Typography>
-                <TextField
-                  required
-                  id="text"
-                  label="Comment"
-                  type="textarea"
-                  multiline
-                  rows="3"
-                  value={commentText}
-                  onChange={e => setCommentText(e.target.value)}
-                />
-                <div className={classes.bottom}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    className={classes.button}
-                    color="primary"
-                    size="large"
-                    // disabled={!isValid || fetching}
-                  >
-                    Send comment
-                  </Button>
-                </div>
-                <Divider />
-                <Typography style={{ marginTop: 10 }} variant="h5">Get article .pdf report!</Typography>
-                <div className={classes.bottom}>
-                  <Button
-                    type="button"
-                    onClick={getReport}
-                    variant="contained"
-                    className={classes.button}
-                    color="secondary"
-                    size="large"
-                    // disabled={!isValid || fetching}
-                  >
-                    Get report
-                  </Button>
-                </div>
+              {coverImageUrl && <img style={{ height: 400 }} src={coverImageUrl} alt="img" />}
+              <Grid container style={{ marginTop: 10 }}>
+                <Grid item xs={12} sm={6}>
+                  <Typography className={classes.left} color="primary" variant="h3">{title}</Typography>
+                  <Typography className={classes.left} color="textSecondary" variant="subtitle1">{text}</Typography>
+                  <Typography className={classes.left} variant="body2">{moment(createdAt).format('DD/MM/YYYY HH:MM')}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <div className={classes.bottom}>
+                    <Typography color="textPrimary" variant="h5">Get .pdf report</Typography>
+                    <Button
+                      type="button"
+                      onClick={getReport}
+                      variant="outlined"
+                      className={classes.button}
+                      color="secondary"
+                      size="large"
+                      // disabled={!isValid || fetching}
+                    >
+                      Get report <PictureAsPdfIcon style={{ marginLeft: 10 }} />
+                    </Button>
+                  </div>
+                </Grid>
+              </Grid>
+              <Divider style={{ marginTop: 20 }} />
+              <form className={classes.form} style={{ margin: "10px auto" }} onSubmit={postComment}>
+                <Grid container>
+                  <Grid item xs={12} sm={5}>
+                    <Typography color="textPrimary" variant="h5">Send some comment!</Typography>
+                    <TextField
+                      required
+                      id="text"
+                      label="Comment"
+                      type="textarea"
+                      multiline
+                      rows="3"
+                      value={commentText}
+                      onChange={e => setCommentText(e.target.value)}
+                    />
+                    <div className={classes.bottom}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        className={classes.button}
+                        color="primary"
+                        size="large"
+                        // disabled={!isValid || fetching}
+                      >
+                        Send comment
+                      </Button>
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} sm={7}>
+                    <Typography align="center" color="textPrimary" style={{ marginTop: 10 }} variant="h5">You can also donate</Typography>
+                    <StripeForm />
+                  </Grid>
+                </Grid>
               </form>
             </Paper>
           </Grid>
@@ -170,8 +218,6 @@ const Article = () => {
           </Grid>
         </Grid>
       </div>
-
-      <StripeForm />
     </>
   )
 }
