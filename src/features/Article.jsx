@@ -10,6 +10,7 @@ import Divider from "@material-ui/core/Divider";
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Comment from "../components/Comment";
 import StripeForm from '../StripeForm';
 import { API_URL, USER_ID_KEY, ACCESS_TOKEN_KEY } from '../App';
 
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Article = () => {
   const params = useParams();
+  const [fetching, setFetching] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
   const [article, setArticle] = useState({});
@@ -99,6 +101,7 @@ const Article = () => {
   const postComment = async e => {
     e.preventDefault();
 
+    setFetching(true);
     await axios
       .post(
         `${API_URL}/articles/${params.id}/comments`,
@@ -119,11 +122,15 @@ const Article = () => {
       .catch(function(error) {
         console.log(error);
       });
+
+      setCommentText("");
+      setFetching(false);
   };
 
   const getReport = async e => {
     e.preventDefault()
 
+    setFetching(true);
     const { data } = await axios
       .get(
         `${API_URL}/articles/${params.id}/report`,
@@ -139,6 +146,7 @@ const Article = () => {
       .catch(function(error) {
         console.log(error);
       });
+    setFetching(false);
 
     window.open(`${API_URL}/${data}`, '__blank')
   }
@@ -168,7 +176,7 @@ const Article = () => {
                       className={classes.button}
                       color="secondary"
                       size="large"
-                      // disabled={!isValid || fetching}
+                      disabled={fetching}
                     >
                       Get report <PictureAsPdfIcon style={{ marginLeft: 10 }} />
                     </Button>
@@ -197,7 +205,7 @@ const Article = () => {
                         className={classes.button}
                         color="primary"
                         size="large"
-                        // disabled={!isValid || fetching}
+                        disabled={!commentText || fetching}
                       >
                         Send comment
                       </Button>
@@ -213,7 +221,11 @@ const Article = () => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <Paper elevation={1} className={classes.paper}>
-              comments
+            <Typography gutterBottom align="left" color="textPrimary" variant="subtitle1">Comments</Typography>
+              {comments.length > 0
+                ? comments.map(comment => <Comment key={comment.id} {...comment} />)
+                : <Typography align="left" variant="body">No comments yet. Be first!</Typography>
+              }
             </Paper>
           </Grid>
         </Grid>
