@@ -17,14 +17,16 @@ import TopNav from "./components/TopNav";
 export const USER_ID_KEY = 'user_id';
 export const USER_NAME_KEY = 'user_name';
 export const ACCESS_TOKEN_KEY = 'access_token';
-export const API_URL = 'http://localhost:8000';
+// export const API_URL = 'http://localhost:8000';
+export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
 
-const WEBSOCKET_URL = `ws://localhost:8001/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
+const WEBSOCKET_URL = `ws://fast-scrubland-94933.herokuapp.com/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
 
 // connect to websocket channel only after login
 const connection = new WebSocket(WEBSOCKET_URL);
 
-connection.onerror = (error) => {
+connection.onerror = error => {
+  console.log('e', error)
   console.log(`WebSocket error: ${error}`)
 }
 
