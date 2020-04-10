@@ -20,7 +20,7 @@ export const ACCESS_TOKEN_KEY = 'access_token';
 // export const API_URL = 'http://localhost:8000';
 export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
 
-const WEBSOCKET_URL = `ws://fast-scrubland-94933.herokuapp.com:8001/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
+const WEBSOCKET_URL = `wss://fast-scrubland-94933.herokuapp.com:8001/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
 
 // connect to websocket channel only after login
 const connection = new WebSocket(WEBSOCKET_URL);
