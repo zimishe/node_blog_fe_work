@@ -65,7 +65,7 @@ const ArticlesList = () => {
 
   useEffect(() => {
     const getArticles = async () => {
-      const { data } = await axios
+      const response = await axios
         .get(
           `${API_URL}/articles`,
 
@@ -81,7 +81,7 @@ const ArticlesList = () => {
           console.log(error);
         });
 
-      setArticles(data);
+      setArticles(response ? response.data : []);
     }
 
     getArticles();

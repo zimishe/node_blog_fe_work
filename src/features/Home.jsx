@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import { API_URL, USER_ID_KEY, ACCESS_TOKEN_KEY } from "../App";
 import ArticlesList from "../components/ArticlesList";
 
-const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />;
+export const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />;
 
 const useStyles = makeStyles((theme) => ({
   root: {
