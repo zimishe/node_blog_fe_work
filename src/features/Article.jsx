@@ -224,7 +224,7 @@ const Article = () => {
             <Typography gutterBottom align="left" color="textPrimary" variant="subtitle1">Comments</Typography>
               {comments.length > 0
                 ? comments.map(comment => <Comment key={comment.id} {...comment} />)
-                : <Typography align="left" variant="body">No comments yet. Be first!</Typography>
+                : <Typography align="left" variant="body1">No comments yet. Be first!</Typography>
               }
             </Paper>
           </Grid>

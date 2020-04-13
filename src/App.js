@@ -5,6 +5,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import io from 'socket.io-client';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './features/Home';
 import Login from './features/Login';
@@ -17,22 +18,17 @@ import TopNav from "./components/TopNav";
 export const USER_ID_KEY = 'user_id';
 export const USER_NAME_KEY = 'user_name';
 export const ACCESS_TOKEN_KEY = 'access_token';
-// export const API_URL = 'http://localhost:8000';
-export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
+export const API_URL = 'http://localhost:8000';
+// export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
 
-const WEBSOCKET_URL = `wss://fast-scrubland-94933.herokuapp.com:8001/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
+const WEBSOCKET_URL = `${API_URL}/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
 
 // connect to websocket channel only after login
-const connection = new WebSocket(WEBSOCKET_URL);
+const socket = io(WEBSOCKET_URL);
 
-connection.onerror = error => {
-  console.log('e', error)
-  console.log(`WebSocket error: ${error}`)
-}
-
-connection.onmessage = (e) => {
-  console.log(e.data)
-}
+socket.on('message', data => {
+  console.log(data)
+})
 
 const App = () => (
   <>
