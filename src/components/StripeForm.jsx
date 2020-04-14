@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { API_URL } from './App'
+import { API_URL, ACCESS_TOKEN_KEY } from '../App'
 
 const style = {
   base: {
@@ -18,26 +20,28 @@ const style = {
 };
 
 const StripeForm = () => {
+  const [fetching, setFetching] = useState(false);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
+
   const stripe = useStripe();
   const elements = useElements();
+  const params = useParams();
 
   const handlePayment = async () => {
-    const { data } = await axios
+    try {
+      setFetching(true);
+      const response = await axios
       .get(
-        `${API_URL}/articles/95ba2270-6eae-11ea-b9dd-8779de227448/donate`,
+        `${API_URL}/articles/${params.id}/donate`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdC50IiwicGFzc3dvcmQiOiJ6aGVwYSIsImlhdCI6MTU4MzQxNTIzM30.KNDAiDKLK7AL2ZhAqUlmnrXmB4PXZqrkRoeMJbpObuA"
+            Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN_KEY)}`
           }
         }
-      )
-      .catch(function(error) {
-        console.log(error);
-      });
+      );
 
-      const result = await stripe.confirmCardPayment(data.client_secret, {
+      const result = await stripe.confirmCardPayment(response.data.client_secret, {
         payment_method: {
           card: elements.getElement(CardElement),
           billing_details: {
@@ -51,9 +55,13 @@ const StripeForm = () => {
       } else {
         // The payment has been processed!
         if (result.paymentIntent.status === 'succeeded') {
-          console.log('payment succeed')
+          setConfirmationVisible(true);
         }
       }
+      setFetching(false);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -66,9 +74,15 @@ const StripeForm = () => {
           onClick={handlePayment}
           color="secondary"
           size="large"
+          disabled={fetching}
         >
           Donate 0.50 USD
         </Button>
+        {confirmationVisible && (
+          <Typography style={{ marginTop: 20, textAlign: 'right' }} variant="h6">
+            Success! Thanks for donation.
+          </Typography>
+        )}
       </div>
     </div>
   )

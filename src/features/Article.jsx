@@ -11,7 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Comment from "../components/Comment";
-import StripeForm from '../StripeForm';
+import StripeForm from '../components/StripeForm';
 import { API_URL, USER_ID_KEY, ACCESS_TOKEN_KEY } from '../App';
 
 const useStyles = makeStyles((theme) => ({
