@@ -21,8 +21,8 @@ import "./App.css";
 export const USER_ID_KEY = 'user_id';
 export const USER_NAME_KEY = 'user_name';
 export const ACCESS_TOKEN_KEY = 'access_token';
-export const API_URL = 'http://localhost:8000';
-// export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
+// export const API_URL = 'http://localhost:8000';
+export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
 
 const WEBSOCKET_URL = `${API_URL}/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
 let socket;
