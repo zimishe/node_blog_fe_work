@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { Link, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
-import { Link } from 'react-router-dom';
+import qs from 'qs';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { API_URL, USER_ID_KEY, USER_NAME_KEY, ACCESS_TOKEN_KEY } from '../App';
+import { API_URL } from '../App';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,68 +25,65 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Login = () => {
+const UpdatePassword = () => {
   const classes = useStyles();
+  const params = useParams();
+  const location = useLocation();
 
-  const [email, setEmail] = useState("");
+  const query = qs.parse(location.search.slice(1));
+
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [fetching, setFetching] = useState(false);
 
   const onSubmit = async e => {
     e.preventDefault();
 
     setFetching(true);
-
     try {
-      const response = await axios
+      await axios
         .post(
-          `${API_URL}/login`,
-          {
-            email,
-            password
-          },
+          `${API_URL}/password/update/${params.userId}?token=${query.token}`,
+          { password, passwordConfirmation },
           {
             headers: {
               "Content-Type": "application/json",
             }
           }
         )
-        .catch(error => {
-          console.log(error);
-        });
 
       setFetching(false);
-
-      localStorage.setItem(USER_ID_KEY, response.data.id);
-      localStorage.setItem(USER_NAME_KEY, response.data.name);
-      localStorage.setItem(ACCESS_TOKEN_KEY, response.data.token);
-      window.open('/', '_self');
-    } catch (error) {
-      console.log(error);
+      setPassword("");
+      setPasswordConfirmation("");
+      setConfirmationVisible(true);
+    } catch (err) {
+      console.log(err)
     }
   }
 
-  const isValid = [email, password].every(item => Boolean(item));
+  const isValid = [password, passwordConfirmation, password === passwordConfirmation]
+    .every(condition => Boolean(condition));
 
   return (
     <Container style={{ margin: '20px auto' }} maxWidth="xs">
-      <Typography variant="h4">Login</Typography>
+      <Typography variant="h6">Enter your email address to reset current password</Typography>
       <form onSubmit={onSubmit} className={classes.root}>
         <TextField
           required
-          id="email"
-          label="Email"
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <TextField
-          required
           id="password"
-          label="Password"
+          label="New password"
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
+        />
+        <TextField
+          required
+          id="passwordConfirmation"
+          label="Repeat new password"
+          type="password"
+          value={passwordConfirmation}
+          onChange={e => setPasswordConfirmation(e.target.value)}
         />
         <div className={classes.bottom}>
           <Button
@@ -96,18 +94,17 @@ const Login = () => {
             size="large"
             disabled={!isValid || fetching}
           >
-            Login
+            Update password
           </Button>
         </div>
+        {confirmationVisible && (
+          <Typography variant="body2">
+            Your password has been updated. You can now <Link to="/login">login</Link> with your new credentials
+          </Typography>
+        )}
       </form>
-      <Typography variant="body2">
-        Don't have an account? <Link to="/signup">Sign up here</Link>
-      </Typography>
-      <Typography variant="body2">
-        Forgot your password? <Link to="/password/reset">Reset it here</Link>
-      </Typography>
     </Container>
   )
 }
 
-export default Login
+export default UpdatePassword;

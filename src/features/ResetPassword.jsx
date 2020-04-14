@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory, Link } from "react-router-dom";
 import axios from "axios";
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -24,13 +23,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Signup = () => {
+const ResetPassword = () => {
   const classes = useStyles();
-  const history = useHistory();
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [fetching, setFetching] = useState(false);
 
   const onSubmit = async e => {
@@ -39,12 +36,8 @@ const Signup = () => {
     setFetching(true);
     await axios
       .post(
-        `${API_URL}/sign_up`,
-        {
-          name,
-          email,
-          password
-        },
+        `${API_URL}/password/reset`,
+        { email },
         {
           headers: {
             "Content-Type": "application/json",
@@ -56,23 +49,14 @@ const Signup = () => {
       });
 
     setFetching(false);
-    history.push('/login');
+    setEmail("");
+    setConfirmationVisible(true);
   }
-
-  const isValid = [name, email, password].every(item => Boolean(item));
 
   return (
     <Container style={{ margin: '20px auto' }} maxWidth="xs">
-      <Typography variant="h4">Sign up</Typography>
+      <Typography variant="h6">Enter your email address to reset current password</Typography>
       <form onSubmit={onSubmit} className={classes.root}>
-        <TextField
-          required
-          id="name"
-          label="Name"
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
         <TextField
           required
           id="email"
@@ -81,14 +65,6 @@ const Signup = () => {
           value={email}
           onChange={e => setEmail(e.target.value)}
         />
-        <TextField
-          required
-          id="password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
         <div className={classes.bottom}>
           <Button
             type="submit"
@@ -96,20 +72,17 @@ const Signup = () => {
             className={classes.button}
             color="primary"
             size="large"
-            disabled={!isValid || fetching}
+            disabled={!email || fetching}
           >
-            Sign up
+            Reset
           </Button>
         </div>
+        {confirmationVisible && (
+          <Typography variant="body2">Reset password email was sent. Please check your inbox</Typography>
+        )}
       </form>
-      <Typography variant="body2">
-        Already have an account? <Link to="/login">Login here</Link>
-      </Typography>
-      <Typography variant="body2">
-        Forgot your password? <Link to="/password/reset">Reset it here</Link>
-      </Typography>
     </Container>
   )
 }
 
-export default Signup
+export default ResetPassword;

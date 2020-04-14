@@ -11,6 +11,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Home, { Alert } from './features/Home';
 import Login from './features/Login';
 import Signup from './features/Signup';
+import ResetPassword from './features/ResetPassword';
+import UpdatePassword from './features/UpdatePassword';
 import Article from './features/Article';
 import NotFound from './features/NotFound';
 import TopNav from "./components/TopNav";
@@ -19,8 +21,8 @@ import "./App.css";
 export const USER_ID_KEY = 'user_id';
 export const USER_NAME_KEY = 'user_name';
 export const ACCESS_TOKEN_KEY = 'access_token';
-// export const API_URL = 'http://localhost:8000';
-export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
+export const API_URL = 'http://localhost:8000';
+// export const API_URL = 'https://fast-scrubland-94933.herokuapp.com';
 
 const WEBSOCKET_URL = `${API_URL}/?${USER_ID_KEY}=${localStorage.getItem(USER_ID_KEY)}`;
 let socket;
@@ -67,6 +69,8 @@ const App = () => {
           </Route>
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
+          <Route path="/password/reset" component={ResetPassword} />
+          <Route path="/password/update/:userId" component={UpdatePassword} />
           <Route path="/articles/:id">
             {localStorage.getItem(USER_ID_KEY) ? <Article /> : <Redirect to="/signup" />}
           </Route>
